@@ -240,6 +240,7 @@ GameObject:
   - component: {fileID: 222896284}
   - component: {fileID: 222896285}
   - component: {fileID: 222896286}
+  - component: {fileID: 222896287}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -315,7 +316,7 @@ Transform:
   m_GameObject: {fileID: 222896280}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -30.65, y: -26.78, z: 0}
+  m_LocalPosition: {x: -30.7, y: -28.24, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -413,6 +414,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &222896287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 222896280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 550d4400d22fab24499d7a3a3705e70c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerJump
+  jumpForce: 10
+  maxJumpCount: 2
 --- !u!1 &263093635
 GameObject:
   m_ObjectHideFlags: 0
@@ -827,7 +842,7 @@ GameObject:
   - component: {fileID: 545420338}
   m_Layer: 0
   m_Name: Ground
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
