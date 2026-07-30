@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class Parralax : MonoBehaviour
 {
-    #region parallaxRightToLeft;
     [SerializeField] float depth = 1f;
     public Player player;
     public float limitDistance = -30f;
@@ -31,7 +30,6 @@ public class Parralax : MonoBehaviour
 
         transform.position = pos;
     }
-    #endregion
 
 
 

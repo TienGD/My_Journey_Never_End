@@ -1,3 +1,5 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,25 +8,28 @@ public class Player : MonoBehaviour
     [SerializeField] float speed = 4.5f;
     [SerializeField] float acceleration = 1.2f;
     public Vector2 velocity;
+
     [SerializeField] Rigidbody2D rb;
+
     public delegate void PowerUpCollectedEventHandler();
     public event PowerUpCollectedEventHandler PowerUpCollected;
-    [SerializeField] Sprite classicForm;
-    [SerializeField] Sprite superForm;
-    [SerializeField] SpriteRenderer render;
+    public bool isChangingScene = false;
 
 
+    public Health health;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        render = GetComponent<SpriteRenderer>();
         
+        DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
     {
-        PowerUpCollected += PowerUpTransform;
+
+        PowerUpCollected += UpdatePower;
+
     }
 
     private void Update()
@@ -39,6 +44,14 @@ public class Player : MonoBehaviour
         //transform.Translate(velocity * Time.deltaTime);       
     }
 
+    private void OnBecameInvisible()
+    {
+        if (!isChangingScene)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D upgradeItems)
     {
         if (upgradeItems.CompareTag("PowerUp"))
@@ -48,19 +61,16 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void UpdatePower()
+    {
+        Debug.Log($"{gameObject} is updated");
+    }
+
     protected virtual void OnPowerUpCollected()
     {
         PowerUpCollected?.Invoke();
     }
 
-    void PowerUpTransform()
-    {
-        
-        if(render != null)
-        {
-            
-        }
-    }
     
 
 

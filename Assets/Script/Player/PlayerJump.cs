@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerJump : MonoBehaviour
 {
-    [SerializeField] float jumpForce = 10f;
+    [SerializeField] float jumpForce = 20f;
     [SerializeField] int maxJumpCount = 2; // 1 = nhảy thường, 2 = double jump
     private Rigidbody2D rb;
     private int jumpCount = 0;
@@ -17,7 +17,7 @@ public class PlayerJump : MonoBehaviour
 
     void Update()
     {
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && jumpCount < maxJumpCount)
+        if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame && jumpCount < maxJumpCount)
         {
             Jump();
         }
