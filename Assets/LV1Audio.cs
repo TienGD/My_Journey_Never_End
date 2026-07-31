@@ -1,6 +1,5 @@
 using UnityEngine;
-
-public class AudioManager : MonoBehaviour
+public class LV1Audio : MonoBehaviour
 {
     public AudioSource sfxAudioSource;
     public AudioSource bgmAudioSource;
