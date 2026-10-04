@@ -5,74 +5,66 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] float speed = 4.5f;
-    [SerializeField] float acceleration = 1.2f;
-    public Vector2 velocity;
+    [Header("speed information")]
+    [SerializeField] bool isRunBegun ;
+    [SerializeField] float moveSpeed ;
 
-    [SerializeField] Rigidbody2D rb;
+    private Rigidbody2D rb;
 
-    public delegate void PowerUpCollectedEventHandler();
-    public event PowerUpCollectedEventHandler PowerUpCollected;
-    public bool isChangingScene = false;
+    [Header("input information")]
+    [SerializeField] private InputAction runAction;
 
+    private Animator anim;
 
-    public Health health;
+    [SerializeField] bool isRunning;
+    [SerializeField] bool isGrounded;
+
+    public bool IsRunBegun { get => isRunBegun; private set => isRunBegun = value; }
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        
+        anim = GetComponent<Animator>();
+
         DontDestroyOnLoad(gameObject);
-    }
-
-    private void Start()
-    {
-
-        PowerUpCollected += UpdatePower;
-
     }
 
     private void Update()
     {
-        // Tăng tốc độ theo thời gian
-        speed += acceleration * Time.deltaTime;
+        checkInput();
 
-        // CẬP NHẬT VẬN TỐC Ở ĐÂY: Vận tốc = Hướng đi * Tốc độ
-        velocity = Vector2.right * speed;
+        if (IsRunBegun)
+        {
+            rb.linearVelocity = new Vector2(moveSpeed, rb.linearVelocity.y);
+        }
 
-        //// Di chuyển nhân vật dựa trên velocity đã tính toán
-        //transform.Translate(velocity * Time.deltaTime);       
+        AnimatorController();
     }
 
-    private void OnBecameInvisible()
+    private void AnimatorController()
     {
-        if (!isChangingScene)
+        isRunning = Mathf.Abs(rb.linearVelocity.x) > 0.01f;
+        anim.SetBool("isRunning", isRunning);
+        
+    }
+
+    private void OnEnable()
+    {
+        runAction.Enable();
+    }
+
+
+    private void OnDisable()
+    {
+        runAction.Disable();
+    }
+    private void checkInput()
+    {
+        if (runAction.WasPressedThisFrame())
         {
-            Destroy(gameObject);
+            IsRunBegun = true;
+
         }
     }
-
-    private void OnTriggerEnter2D(Collider2D upgradeItems)
-    {
-        if (upgradeItems.CompareTag("PowerUp"))
-        {
-            OnPowerUpCollected();
-            Destroy(upgradeItems);
-        }
-    }
-
-    private void UpdatePower()
-    {
-        Debug.Log($"{gameObject} is updated");
-    }
-
-    protected virtual void OnPowerUpCollected()
-    {
-        PowerUpCollected?.Invoke();
-    }
-
-    
-
-
 
 }
