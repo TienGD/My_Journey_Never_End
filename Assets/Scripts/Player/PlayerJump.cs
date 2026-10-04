@@ -7,44 +7,82 @@ public class PlayerJump : MonoBehaviour
     [SerializeField] int maxJumpCount = 2; // 1 = nhảy thường, 2 = double jump
     private Rigidbody2D rb;
     private int jumpCount = 0;
-    private bool isGrounded = true;
+
+    [Header("Collision infor")]
+    [SerializeField] bool isGrounded;
+    [SerializeField] private float groundCheckDistance = 0.1f;
+    [SerializeField] private InputAction jumpAction;
+    [SerializeField] Player checkRunning;
+
+    private Animator anim;
+    private Collider2D col;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<Collider2D>();
+        checkRunning = GetComponent<Player>();
+        anim = GetComponent<Animator>();
+        isGrounded = true;
     }
     
-
     void Update()
     {
-        if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame && jumpCount < maxJumpCount)
+        CheckGrounded();
+
+        anim.SetBool("isGrounded", isGrounded);
+        anim.SetFloat("yVelocity", rb.linearVelocity.y);
+
+        if (jumpAction.WasPressedThisFrame() && jumpCount < maxJumpCount && checkRunning.IsRunBegun) 
         {
+            //Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame && jumpCount < maxJumpCount
             Jump();
+            print("player is jumpping");
         }
     }
 
-     void Jump()
+    private void CheckGrounded()
     {
-        // Reset vận tốc theo trục Y trước khi nhảy để lần nhảy nào cũng có lực giống nhau
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-        rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+        RaycastHit2D[] hits = new RaycastHit2D[5];
+        int hitCount = col.Cast(Vector2.down, hits, groundCheckDistance);
+
+        bool grounded = false;
+        for (int i = 0; i < hitCount; i++)
+        {
+            if (hits[i].collider != null && hits[i].collider.CompareTag("Ground"))
+            {
+                grounded = true;
+                break;
+            }
+        }
+
+        // Khi đang nhảy lên (vận tốc Y dương đáng kể), không coi là đang chạm đất
+        if (rb.linearVelocity.y > 0.1f)
+        {
+            grounded = false;
+        }
+
+        isGrounded = grounded;
+        if (isGrounded)
+        {
+            jumpCount = 0;
+        }
+    }
+
+    private void OnEnable()
+    {
+        jumpAction.Enable();
+    }
+
+    private void OnDisable()
+    {
+        jumpAction.Disable();
+    }
+
+    void Jump()
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        isGrounded = false;
         jumpCount++;
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-            jumpCount = 0; // Reset số lần nhảy khi chạm đất
-        }
-    }
-
-    void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-        }
     }
 }
