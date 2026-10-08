@@ -30,15 +30,15 @@ public class PlayerJump : MonoBehaviour
     {
         CheckGrounded();
 
-        anim.SetBool("isGrounded", isGrounded);
-        anim.SetFloat("yVelocity", rb.linearVelocity.y);
-
         if (jumpAction.WasPressedThisFrame() && jumpCount < maxJumpCount && checkRunning.IsRunBegun) 
         {
             //Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame && jumpCount < maxJumpCount
             Jump();
             print("player is jumpping");
         }
+
+        anim.SetBool("isGrounded", isGrounded);
+        anim.SetFloat("yVelocity", rb.linearVelocity.y);
     }
 
     private void CheckGrounded()
@@ -57,7 +57,7 @@ public class PlayerJump : MonoBehaviour
         }
 
         // Khi đang nhảy lên (vận tốc Y dương đáng kể), không coi là đang chạm đất
-        if (rb.linearVelocity.y > 0.1f)
+        if (jumpCount > 0 && rb.linearVelocity.y > 0.1f)
         {
             grounded = false;
         }
