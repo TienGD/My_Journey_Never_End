@@ -37,8 +37,8 @@ public class PlayerJump : MonoBehaviour
             print("player is jumpping");
         }
 
-        anim.SetBool("isGrounded", isGrounded);
-        anim.SetFloat("yVelocity", rb.linearVelocity.y);
+        //anim.SetBool("isGrounded", isGrounded);
+        //anim.SetFloat("yVelocity", rb.linearVelocity.y);
     }
 
     private void CheckGrounded()
