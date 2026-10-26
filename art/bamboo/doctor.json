@@ -1,0 +1,251 @@
+{
+  "schema": "generate2dmedia.doctor.v1",
+  "tool": {
+    "name": "forge_doctor",
+    "version": "0.4.0"
+  },
+  "createdAt": "2026-10-26T14:39:38.995Z",
+  "overall": "FAIL",
+  "host": {
+    "declared": true,
+    "tools": [],
+    "unrecognised": []
+  },
+  "checks": [
+    {
+      "id": "python.version",
+      "status": "OK",
+      "detail": "Python 3.14.6 at ~/AppData/Local/Python/pythoncore-3.14-64/python.exe"
+    },
+    {
+      "id": "python.path",
+      "status": "WARN",
+      "detail": "other python.exe on PATH: ~/AppData/Local/Microsoft/WindowsApps/python.exe; ~/AppData/Local/Python/bin/python.exe",
+      "remedy": "PowerShell, cmd and Git Bash may resolve different interpreters; run Forge with the one shown in python.version"
+    },
+    {
+      "id": "deps.numpy",
+      "status": "OK",
+      "detail": "2.5.1"
+    },
+    {
+      "id": "deps.Pillow",
+      "status": "OK",
+      "detail": "12.3.0"
+    },
+    {
+      "id": "deps.scipy",
+      "status": "OK",
+      "detail": "1.18.1"
+    },
+    {
+      "id": "deps.resvg-py",
+      "status": "MISSING",
+      "detail": "not installed; needed for codeart2d SVG rendering (PixelSpec needs only numpy and Pillow)",
+      "remedy": "\"C:\\Users\\MSI\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe\" -m pip install \"resvg-py>=0.5,<0.6\""
+    },
+    {
+      "id": "encoding.stdout",
+      "status": "FAIL",
+      "detail": "stdout=cp1252 cannot print U+2192, U+2190: Python scripts that print them (your own helpers, older tools) crash with UnicodeEncodeError after doing their work",
+      "remedy": "set PYTHONUTF8=1 before running Python (PowerShell: $env:PYTHONUTF8=1; bash: export PYTHONUTF8=1)"
+    },
+    {
+      "id": "encoding.files",
+      "status": "WARN",
+      "detail": "open() and read_text() without encoding= use cp1252",
+      "remedy": "pass encoding='utf-8' in your own scripts, or set PYTHONUTF8=1"
+    },
+    {
+      "id": "skills.present",
+      "status": "OK",
+      "detail": "D:/AgentSkill/agent-sprite-forge/skills: all 5 skills"
+    },
+    {
+      "id": "skills.vendored",
+      "status": "OK",
+      "detail": "vendored shared files agree across skills"
+    },
+    {
+      "id": "skills.canonical",
+      "status": "OK",
+      "detail": "source checkout: vendored copies match shared/"
+    },
+    {
+      "id": "ffmpeg",
+      "status": "MISSING",
+      "detail": "ffmpeg is not on PATH; video decode and encode are unavailable (PNG-frame input still works)",
+      "remedy": "install ffmpeg 5.1 or newer (it ships ffprobe) and reopen the shell"
+    },
+    {
+      "id": "media.host-tools",
+      "status": "OK",
+      "detail": "declared: none"
+    },
+    {
+      "id": "media.config",
+      "status": "OK",
+      "detail": "no user config file at ~/AppData/Roaming/agent-sprite-forge/config.json (optional: API keys may also come from the environment)"
+    },
+    {
+      "id": "media.api.openai",
+      "status": "MISSING",
+      "detail": "OPENAI_API_KEY is not configured",
+      "remedy": "optional: set OPENAI_API_KEY in the environment or in the user config file to make the OpenAI API an image route (GPT Image)"
+    },
+    {
+      "id": "media.api.gemini",
+      "status": "MISSING",
+      "detail": "GOOGLE_API_KEY or GEMINI_API_KEY is not configured",
+      "remedy": "optional: set GOOGLE_API_KEY or GEMINI_API_KEY in the environment or in the user config file to make the Google Gemini API an image route (Gemini image models)"
+    },
+    {
+      "id": "media.api.xai",
+      "status": "MISSING",
+      "detail": "XAI_API_KEY is not configured",
+      "remedy": "optional: set XAI_API_KEY in the environment or in the user config file to make the xAI API an image and video route (Grok Imagine)"
+    },
+    {
+      "id": "media.api.byteplus",
+      "status": "MISSING",
+      "detail": "ARK_API_KEY is not configured",
+      "remedy": "optional: set ARK_API_KEY in the environment or in the user config file to make the BytePlus ModelArk API an image and video route (Seedream, Seedance)"
+    },
+    {
+      "id": "media.api.fal",
+      "status": "MISSING",
+      "detail": "FAL_KEY is not configured",
+      "remedy": "optional: set FAL_KEY in the environment or in the user config file to make the fal.ai API a reference-edit and video route (Kling, Veo, Luma, MiniMax, Wan, Vidu, LTX)"
+    },
+    {
+      "id": "cli.codex",
+      "status": "MISSING",
+      "detail": "Codex CLI not found on PATH",
+      "remedy": "optional: install the Codex CLI and sign in, then verify a route"
+    },
+    {
+      "id": "cli.grok",
+      "status": "MISSING",
+      "detail": "Grok Build CLI not found on PATH or in $GROK_HOME/bin",
+      "remedy": "optional: install the Grok Build CLI and sign in, then verify a route"
+    }
+  ],
+  "cli": {},
+  "apiKeys": {
+    "openai": false,
+    "gemini": false,
+    "xai": false,
+    "byteplus": false,
+    "fal": false
+  },
+  "providers": {
+    "openai": {
+      "label": "OpenAI API",
+      "configured": false,
+      "keyEnv": [
+        "OPENAI_API_KEY"
+      ],
+      "source": null,
+      "variable": null,
+      "kinds": [
+        "image"
+      ]
+    },
+    "gemini": {
+      "label": "Google Gemini API",
+      "configured": false,
+      "keyEnv": [
+        "GOOGLE_API_KEY",
+        "GEMINI_API_KEY"
+      ],
+      "source": null,
+      "variable": null,
+      "kinds": [
+        "image"
+      ]
+    },
+    "xai": {
+      "label": "xAI API",
+      "configured": false,
+      "keyEnv": [
+        "XAI_API_KEY"
+      ],
+      "source": null,
+      "variable": null,
+      "kinds": [
+        "image",
+        "video"
+      ]
+    },
+    "byteplus": {
+      "label": "BytePlus ModelArk API",
+      "configured": false,
+      "keyEnv": [
+        "ARK_API_KEY"
+      ],
+      "source": null,
+      "variable": null,
+      "kinds": [
+        "image",
+        "video"
+      ]
+    },
+    "fal": {
+      "label": "fal.ai API",
+      "configured": false,
+      "keyEnv": [
+        "FAL_KEY"
+      ],
+      "source": null,
+      "variable": null,
+      "kinds": [
+        "image",
+        "video"
+      ]
+    }
+  },
+  "providerPreference": {},
+  "routes": {
+    "image": {
+      "route": "none",
+      "status": "none",
+      "detail": "no image generation route: codeart2d is the last resort (disclose it as code-drawn), or report the missing capability",
+      "options": []
+    },
+    "image_edit": {
+      "route": "none",
+      "status": "none",
+      "detail": "no reference-edit route: describe the edit and report the missing capability",
+      "options": []
+    },
+    "video": {
+      "route": "none",
+      "status": "none",
+      "detail": "no video generation route: write a motion brief and report the missing capability (supplied clips can still be processed)",
+      "options": []
+    },
+    "clip": {
+      "route": "png-frames",
+      "status": "limited",
+      "detail": "ffmpeg or ffprobe is missing: process supplied PNG frames only"
+    },
+    "code_art": {
+      "route": "codeart2d",
+      "status": "fallback",
+      "detail": "explicit-only last resort: only when the user asks for code-drawn art or no image or video route exists; codeart2d PixelSpec; SVG needs resvg-py"
+    }
+  },
+  "routeOrder": {
+    "image": [
+      "codeart2d"
+    ],
+    "image_edit": [
+      "codeart2d"
+    ],
+    "video": [
+      "codeart2d"
+    ]
+  },
+  "proofs": {},
+  "elapsedMs": 442
+}

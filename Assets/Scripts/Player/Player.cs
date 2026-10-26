@@ -45,7 +45,7 @@ public class Player : MonoBehaviour
     {
         isRunning = Mathf.Abs(rb.linearVelocity.x) > 0.01f;
         anim.SetBool("isRunning", isRunning);
-        
+
     }
 
     private void OnEnable()

@@ -1,0 +1,212 @@
+{
+  "schema": "codeart2d.codeart_meta.v1",
+  "art_source": "code",
+  "placeholder": false,
+  "disclosure": "code-drawn, no image model",
+  "generator": "render_pixelspec.py",
+  "spec_sha256": "e8c1c0f4b6ac7b2e0b754e87fceb7b5c18c57a6bcde5669be4aa9daad66f18a3",
+  "renderer": {
+    "name": "codeart_core.render_pixelspec",
+    "version": "1.1"
+  },
+  "palette": {
+    "colors": {
+      "k": "#182010",
+      "T": "#3a5a15",
+      "t": "#5a8222",
+      "G": "#4aaa28",
+      "g": "#2d7010",
+      "L": "#80d840",
+      "H": "#b4f060"
+    },
+    "variants": {}
+  },
+  "outputs": [
+    {
+      "path": "base/frames/f0.png",
+      "sha256": "c10b3b717b6b2e458a42c1147768d350bf6d5cfbc6cd6a1af803324663a0b37e",
+      "bytes": 658
+    },
+    {
+      "path": "base/frames/f1.png",
+      "sha256": "33a71218fb5646de796c065100bf1911152620a3cc6c733bc0417078f0492fc5",
+      "bytes": 680
+    },
+    {
+      "path": "base/frames/f2.png",
+      "sha256": "184fa621e6df8fd49fd0e593a71ba871818d57668bb4d9c824760a4c52eb5f56",
+      "bytes": 670
+    },
+    {
+      "path": "preview-x6.png",
+      "sha256": "8e2c6a7f84a0fb55f7d0619f0e3b4d6e929cbceb29536cd77e7e38b31047f289",
+      "bytes": 3022
+    }
+  ],
+  "qa": {
+    "status": "fail",
+    "method": "render_pixelspec.py: every published frame PNG is read back and measured with codeart_core.qa_pixels against the resolved palette of its variant (alpha census, exact palette lookup and, with an outline, 4-neighbour outline gaps and L-corners); each check is the worst frame against its gate in codeart_core.QA_PIXEL_GATES",
+    "notProven": [
+      "Readability, silhouette and appeal at game scale; check them on a review sheet (pixel_qa.py --review).",
+      "Motion, timing and spacing between frames; numbers do not judge animation quality.",
+      "That the art matches the brief and the intent of the spec."
+    ],
+    "checks": [
+      {
+        "id": "partial_alpha",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0
+      },
+      {
+        "id": "off_palette",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0
+      },
+      {
+        "id": "outline_gaps",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0
+      },
+      {
+        "id": "l_corners",
+        "status": "fail",
+        "value": 13,
+        "threshold": 10,
+        "failing": [
+          "base/frames/f0.png"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "../bamboo_cluster.pixelspec.json",
+        "sha256": "e8c1c0f4b6ac7b2e0b754e87fceb7b5c18c57a6bcde5669be4aa9daad66f18a3",
+        "bytes": 10264
+      }
+    ],
+    "outputs": [
+      {
+        "path": "base/frames/f0.png",
+        "sha256": "c10b3b717b6b2e458a42c1147768d350bf6d5cfbc6cd6a1af803324663a0b37e",
+        "bytes": 658
+      },
+      {
+        "path": "base/frames/f1.png",
+        "sha256": "33a71218fb5646de796c065100bf1911152620a3cc6c733bc0417078f0492fc5",
+        "bytes": 680
+      },
+      {
+        "path": "base/frames/f2.png",
+        "sha256": "184fa621e6df8fd49fd0e593a71ba871818d57668bb4d9c824760a4c52eb5f56",
+        "bytes": 670
+      }
+    ],
+    "tool": {
+      "name": "render_pixelspec.py",
+      "version": "0.4.0"
+    },
+    "frames": [
+      {
+        "file": "base/frames/f0.png",
+        "variant": "base",
+        "frame": "f0",
+        "visible": 675,
+        "partial_alpha": 0,
+        "off_palette": 0,
+        "colors": 7,
+        "orphans": 51,
+        "l_corners": 13,
+        "outline_gaps": 0,
+        "bbox": [
+          2,
+          0,
+          27,
+          58
+        ]
+      },
+      {
+        "file": "base/frames/f1.png",
+        "variant": "base",
+        "frame": "f1",
+        "visible": 683,
+        "partial_alpha": 0,
+        "off_palette": 0,
+        "colors": 7,
+        "orphans": 55,
+        "l_corners": 10,
+        "outline_gaps": 0,
+        "bbox": [
+          1,
+          0,
+          27,
+          58
+        ]
+      },
+      {
+        "file": "base/frames/f2.png",
+        "variant": "base",
+        "frame": "f2",
+        "visible": 692,
+        "partial_alpha": 0,
+        "off_palette": 0,
+        "colors": 7,
+        "orphans": 61,
+        "l_corners": 8,
+        "outline_gaps": 0,
+        "bbox": [
+          0,
+          0,
+          26,
+          58
+        ]
+      }
+    ]
+  },
+  "pixelspec": {
+    "name": "bamboo_cluster",
+    "schema": "codeart2d.pixelspec.v1",
+    "canvas": [
+      42,
+      58
+    ],
+    "anchor_px": [
+      21,
+      57
+    ],
+    "outline": "solid",
+    "variants": {
+      "base": "base"
+    },
+    "frames": [
+      {
+        "index": 0,
+        "name": "f0",
+        "file": "frames/f0.png"
+      },
+      {
+        "index": 1,
+        "name": "f1",
+        "file": "frames/f1.png"
+      },
+      {
+        "index": 2,
+        "name": "f2",
+        "file": "frames/f2.png"
+      },
+      {
+        "index": 3,
+        "name": "f3",
+        "file": "frames/f1.png",
+        "reuses": 1
+      }
+    ],
+    "preview": {
+      "file": "preview-x6.png",
+      "scale": 6,
+      "layout": "rows are variants, columns are distinct frames"
+    }
+  }
+}
