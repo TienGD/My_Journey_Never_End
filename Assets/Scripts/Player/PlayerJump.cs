@@ -1,18 +1,19 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerJump : MonoBehaviour
 {
     [SerializeField] float jumpForce = 20f;
-    [SerializeField] int maxJumpCount = 2; // 1 = nhảy thường, 2 = double jump
+    private bool canDoubleJump;
     private Rigidbody2D rb;
-    private int jumpCount = 0;
 
     [Header("Collision infor")]
     [SerializeField] bool isGrounded;
-    [SerializeField] private float groundCheckDistance = 0.1f;
+    [SerializeField] private float groundCheckDistance;
     [SerializeField] private InputAction jumpAction;
     [SerializeField] Player checkRunning;
+    public LayerMask whatIsGround;
 
     private Animator anim;
     private Collider2D col;
@@ -20,53 +21,17 @@ public class PlayerJump : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        col = GetComponent<Collider2D>();
         checkRunning = GetComponent<Player>();
         anim = GetComponent<Animator>();
-        isGrounded = true;
     }
     
     void Update()
     {
-        CheckGrounded();
-
-        if (jumpAction.WasPressedThisFrame() && jumpCount < maxJumpCount && checkRunning.IsRunBegun) 
-        {
-            //Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame && jumpCount < maxJumpCount
-            Jump();
-            print("player is jumpping");
-        }
+        CheckCollision();
+        checkInput();
 
         //anim.SetBool("isGrounded", isGrounded);
         //anim.SetFloat("yVelocity", rb.linearVelocity.y);
-    }
-
-    private void CheckGrounded()
-    {
-        RaycastHit2D[] hits = new RaycastHit2D[5];
-        int hitCount = col.Cast(Vector2.down, hits, groundCheckDistance);
-
-        bool grounded = false;
-        for (int i = 0; i < hitCount; i++)
-        {
-            if (hits[i].collider != null && hits[i].collider.CompareTag("Ground"))
-            {
-                grounded = true;
-                break;
-            }
-        }
-
-        // Khi đang nhảy lên (vận tốc Y dương đáng kể), không coi là đang chạm đất
-        if (jumpCount > 0 && rb.linearVelocity.y > 0.1f)
-        {
-            grounded = false;
-        }
-
-        isGrounded = grounded;
-        if (isGrounded)
-        {
-            jumpCount = 0;
-        }
     }
 
     private void OnEnable()
@@ -79,10 +44,46 @@ public class PlayerJump : MonoBehaviour
         jumpAction.Disable();
     }
 
+    private void CheckCollision()
+    {
+        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
+    }
+
+    private void checkInput()
+    {
+        if (jumpAction.WasPressedThisFrame() && checkRunning.IsRunBegun)
+        {
+
+            Jump();
+            
+        }
+    }
+
+    
+
     void Jump()
     {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-        isGrounded = false;
-        jumpCount++;
+        if (isGrounded)
+        {
+            canDoubleJump = true;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+
+            print("player is jumpping");
+        }
+        else if (canDoubleJump)
+        {
+            canDoubleJump = false;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+
+            print("player is jumpping two time");
+        }
+        
+    }
+    // vẽ tia raycast
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
+        
     }
 }

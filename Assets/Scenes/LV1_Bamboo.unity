@@ -833,8 +833,8 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 4
-  m_Material: {fileID: 0}
+  m_GravityScale: 5
+  m_Material: {fileID: 6200000, guid: 41ed5280261e4e841952aebd15ac0122, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -857,10 +857,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 550d4400d22fab24499d7a3a3705e70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerJump
-  jumpForce: 20
-  maxJumpCount: 2
+  jumpForce: 18
   isGrounded: 0
-  groundCheckDistance: 0.1
+  groundCheckDistance: 0.02
   jumpAction:
     m_Name: Jump
     m_Type: 0
@@ -887,6 +886,9 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
   checkRunning: {fileID: 1437134704}
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!114 &1437134704
 MonoBehaviour:
   m_ObjectHideFlags: 0
