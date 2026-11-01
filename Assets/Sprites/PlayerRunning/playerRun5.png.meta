@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4360ac2b079f87445bdb27a46e9d7bab
+guid: a7d9bb1fa301bac46b7662439ca70e3a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7158054552819136377
-    second: Run6_0
+      213: -2742095533658677538
+    second: playerRun5_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 30
+  spritePixelsToUnits: 31
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Run6_0
+      name: playerRun5_0
       rect:
         serializedVersion: 2
-        x: 12
-        y: 16
-        width: 94
-        height: 81
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 4
+        y: 15
+        width: 102
+        height: 85
+      alignment: 8
+      pivot: {x: 1, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 977f6a7d0b4865360800000000000000
-      internalID: 7158054552819136377
+      spriteID: eded610f3ae12f9d0800000000000000
+      internalID: -2742095533658677538
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 95299a15f4f375c4796425ce4993c44f
+    spriteID: c06234dde486ff94cb8e5ac1eb1d575f
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Run6_0: 7158054552819136377
+      playerRun5_0: -2742095533658677538
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

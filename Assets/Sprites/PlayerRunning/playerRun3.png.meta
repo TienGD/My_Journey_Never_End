@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 244120cd75324f049b54a9358d47bad4
+guid: 1a381e7f9dcff41409461aa63666e00b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7930355650201923474
-    second: Run1_0
+      213: -5232264493423468434
+    second: playerRun3_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 30
+  spritePixelsToUnits: 31
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Run1_0
+      name: playerRun3_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 16
-        width: 102
-        height: 84
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 21
+        y: 15
+        width: 88
+        height: 85
+      alignment: 8
+      pivot: {x: 1, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e60d33f8d87b1f190800000000000000
-      internalID: -7930355650201923474
+      spriteID: e60ea9a3a234367b0800000000000000
+      internalID: -5232264493423468434
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 44345c1d38cb62945946a9f3328b7cc7
+    spriteID: 257930a4d7c96a54aad3bd74edab6742
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Run1_0: -7930355650201923474
+      playerRun3_0: -5232264493423468434
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
