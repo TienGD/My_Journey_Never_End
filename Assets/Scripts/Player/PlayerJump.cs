@@ -9,10 +9,15 @@ public class PlayerJump : MonoBehaviour
     private Rigidbody2D rb;
 
     [Header("Collision infor")]
-    [SerializeField] bool isGrounded;
+    
     [SerializeField] private float groundCheckDistance;
     [SerializeField] private InputAction jumpAction;
     [SerializeField] Player checkRunning;
+    [SerializeField] private Transform wallCheck;
+    [SerializeField] private Vector2 wallCheckSize;
+    [SerializeField] bool isGrounded;
+    private bool wallDetected;
+
     public LayerMask whatIsGround;
 
     private Animator anim;
@@ -29,10 +34,21 @@ public class PlayerJump : MonoBehaviour
     {
         CheckCollision();
         checkInput();
+        if (isGrounded)
+        {
+            canDoubleJump = true;
+        }
 
-        //anim.SetBool("isGrounded", isGrounded);
-        //anim.SetFloat("yVelocity", rb.linearVelocity.y);
+        
+        AnimationController();
     }
+
+    private void AnimationController()
+    {
+        anim.SetBool("isGrounded", isGrounded);
+        anim.SetFloat("yVelocity", rb.linearVelocity.y);
+    }
+
 
     private void OnEnable()
     {
@@ -47,11 +63,12 @@ public class PlayerJump : MonoBehaviour
     private void CheckCollision()
     {
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
+        wallDetected = Physics2D.BoxCast(wallCheck.position, wallCheckSize, 0, Vector2.zero, 0, whatIsGround);
     }
 
     private void checkInput()
     {
-        if (jumpAction.WasPressedThisFrame() && checkRunning.IsRunBegun)
+        if (jumpAction.WasPressedThisFrame() && checkRunning.IsRunBegun && !wallDetected)
         {
 
             Jump();
@@ -65,7 +82,7 @@ public class PlayerJump : MonoBehaviour
     {
         if (isGrounded)
         {
-            canDoubleJump = true;
+            
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 
             print("player is jumpping");
@@ -84,6 +101,6 @@ public class PlayerJump : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
-        
+        Gizmos.DrawWireCube(wallCheck.position, wallCheckSize);
     }
 }

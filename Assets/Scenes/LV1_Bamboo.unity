@@ -390,7 +390,7 @@ Transform:
   m_GameObject: {fileID: 512606927}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21.854746, y: 12.181998, z: -10}
+  m_LocalPosition: {x: 30.644745, y: 8.811998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -528,7 +528,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21.854746, y: 12.181998, z: -10}
+  m_LocalPosition: {x: 30.644745, y: 8.811998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -649,6 +649,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &833975533
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 833975534}
+  m_Layer: 0
+  m_Name: Wallcheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &833975534
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833975533}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.13, y: 1.49, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1437134700}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1009698096
 GameObject:
@@ -812,10 +843,11 @@ Transform:
   m_GameObject: {fileID: 1437134697}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.15, y: 4.79, z: 0}
+  m_LocalPosition: {x: 8.94, y: 1.42, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 833975534}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &1437134702
@@ -858,8 +890,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerJump
   jumpForce: 18
-  isGrounded: 0
-  groundCheckDistance: 0.02
+  groundCheckDistance: -453.9
   jumpAction:
     m_Name: Jump
     m_Type: 0
@@ -886,6 +917,9 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
   checkRunning: {fileID: 1437134704}
+  wallCheck: {fileID: 833975534}
+  wallCheckSize: {x: 0.32, y: 2.84}
+  isGrounded: 0
   whatIsGround:
     serializedVersion: 2
     m_Bits: 128
@@ -964,8 +998,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.27053666, y: 1.5944195}
-  m_Size: {x: 1.2013745, y: 3.1481743}
+  m_Offset: {x: -0.9240453, y: 1.5944195}
+  m_Size: {x: 1.2652755, y: 3.1481743}
   m_Direction: 0
 --- !u!1 &1484795072
 GameObject:

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e67d3db15f8bc3242aa3f3a8d43c8bb7
+guid: 3fce474784b0dbd4d873076a6ec6117d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7448846132692346411
-    second: PlayerFall2_0
+      213: 8311636184414593207
+    second: playerJumpFall2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 40
+  spritePixelsToUnits: 29
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PlayerFall2_0
+      name: playerJumpFall2_0
       rect:
         serializedVersion: 2
-        x: 41
-        y: 58
-        width: 141
-        height: 174
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 3
+        y: 14
+        width: 95
+        height: 101
+      alignment: 8
+      pivot: {x: 1, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5d9945278e160a890800000000000000
-      internalID: -7448846132692346411
+      spriteID: 7b0a052a21dd85370800000000000000
+      internalID: 8311636184414593207
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 51952c0c4c8ef9e45b057ccb9a8c6d58
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      PlayerFall2_0: -7448846132692346411
+      playerJumpFall2_0: 8311636184414593207
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
