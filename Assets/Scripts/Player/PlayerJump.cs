@@ -21,7 +21,6 @@ public class PlayerJump : MonoBehaviour
     public LayerMask whatIsGround;
 
     private Animator anim;
-    private Collider2D col;
 
     void Start()
     {
@@ -68,7 +67,8 @@ public class PlayerJump : MonoBehaviour
 
     private void checkInput()
     {
-        if (jumpAction.WasPressedThisFrame() && checkRunning.IsRunBegun && !wallDetected)
+    
+        if (jumpAction.WasPressedThisFrame() && checkRunning.IsRunBegun && !wallDetected&& !checkRunning.IsSliding)
         {
 
             Jump();
