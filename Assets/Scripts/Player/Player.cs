@@ -1,15 +1,12 @@
-using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 
 public class Player : MonoBehaviour
 {
     [Header("speed information")]
-    [SerializeField] bool isRunBegun ;
-    [SerializeField] float moveSpeed ;
+    [SerializeField] bool isRunBegun;
+    [SerializeField] float moveSpeed;
 
     [Header("input information")]
     [SerializeField] InputAction runAction;
@@ -22,7 +19,11 @@ public class Player : MonoBehaviour
     [Header("slide information")]
     [SerializeField] float slideSpeed;
     [SerializeField] float slideCounter;
-    [SerializeField] bool isSliding=false;
+    [SerializeField] bool isSliding = false;
+    private Vector2 originalSize;
+    private Vector2 originalOffset;
+    private CapsuleCollider2D body;
+    [SerializeField] LayerMask whatIsGround;
 
     [Header("check box")]
     [SerializeField] bool isRunning;
@@ -31,6 +32,7 @@ public class Player : MonoBehaviour
     private Animator anim;
     private Rigidbody2D rb;
 
+
     public bool IsRunBegun { get => isRunBegun; private set => isRunBegun = value; }
     public bool IsSliding { get => isSliding; set => isSliding = value; }
 
@@ -38,14 +40,16 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-
+        body = GetComponent<CapsuleCollider2D>();
+        originalSize = body.size;
+        originalOffset = body.offset;
         DontDestroyOnLoad(gameObject);
     }
 
     private void Update()
     {
         checkInput();
-        
+
 
         if (IsRunBegun)
         {
@@ -60,12 +64,12 @@ public class Player : MonoBehaviour
         if (isSliding)
         {
             rb.linearVelocity = new Vector2(slideSpeed, rb.linearVelocity.y);
-            Debug.Log("is sliding");
+
         }
         else
         {
             rb.linearVelocity = new Vector2(moveSpeed, rb.linearVelocity.y);
-            Debug.Log("is running");
+
 
         }
     }
@@ -103,8 +107,8 @@ public class Player : MonoBehaviour
     private void OnSwipe(InputAction.CallbackContext context)
     {
         Vector2 delta = context.ReadValue<Vector2>();
-
-        if (delta.y < -swipeThreshold && !isSliding)
+        bool isJumping = rb.linearVelocity.y > 0.1f;
+        if (delta.y < -swipeThreshold && !isSliding && !isJumping)
         {
             StartCoroutine(PerformSlide());
         }
@@ -112,13 +116,29 @@ public class Player : MonoBehaviour
     private IEnumerator PerformSlide()
     {
         isSliding = true;
-        Debug.Log("Bắt đầu trượt! (Thu nhỏ Collider, chạy Animation)");
+        body.offset = new Vector2(originalOffset.x, originalOffset.y - (originalSize.y / 4f));
+        body.size = new Vector2(originalSize.x, originalSize.y / 2f);
 
-        yield return new WaitForSeconds(slideCounter); 
-
-
+        // Đợi tối thiểu slideCounter giây trước
+        yield return new WaitForSeconds(slideCounter);
+        // Sau đó kiểm tra từng frame: còn vật thể bên trên không?
+        while (CeilingDetected())
+        {
+            yield return null; // đợi frame tiếp theo
+        }
         isSliding = false;
-        Debug.Log("Kết thúc trượt!");
+        body.size = originalSize;
+        body.offset = originalOffset;
+
+    }
+    // Kiểm tra vật thể phía trên đầu (vị trí đầu lúc bình thường)
+    private bool CeilingDetected()
+    {
+        // Vị trí đỉnh đầu khi collider bình thường
+        Vector2 ceilingCheckPos = (Vector2)transform.position
+                                + Vector2.up * (originalOffset.y + originalSize.y / 2f);
+
+        return Physics2D.OverlapCircle(ceilingCheckPos, originalSize.x / 2f, whatIsGround);
     }
 
 

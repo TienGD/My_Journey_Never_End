@@ -390,7 +390,7 @@ Transform:
   m_GameObject: {fileID: 512606927}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 26.774666, y: 8.811998, z: -10}
+  m_LocalPosition: {x: 30.644745, y: 8.811998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -528,7 +528,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 26.774666, y: 8.811998, z: -10}
+  m_LocalPosition: {x: 30.644745, y: 8.811998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -890,7 +890,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerJump
   jumpForce: 18
-  groundCheckDistance: -453.9
+  groundCheckDistance: -0.09
   jumpAction:
     m_Name: Jump
     m_Type: 0
@@ -963,10 +963,13 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
   swipeAction: {fileID: 2346992489210499143, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-  swipeThreshold: 20
-  slideSpeed: 18
+  swipeThreshold: 24
+  slideSpeed: 20
   slideCounter: 0.3
   isSliding: 0
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 128
   isRunning: 0
   isGrounded: 0
 --- !u!70 &1437134705
@@ -979,7 +982,7 @@ CapsuleCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 41ed5280261e4e841952aebd15ac0122, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1003,8 +1006,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.9240453, y: 1.5944195}
-  m_Size: {x: 1.2652755, y: 3.1481743}
+  m_Offset: {x: -0.9240453, y: 1.550997}
+  m_Size: {x: 1.2652755, y: 3.1125998}
   m_Direction: 0
 --- !u!1 &1484795072
 GameObject:

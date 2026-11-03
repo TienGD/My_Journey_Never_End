@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,7 +8,7 @@ public class PlayerJump : MonoBehaviour
     private Rigidbody2D rb;
 
     [Header("Collision infor")]
-    
+
     [SerializeField] private float groundCheckDistance;
     [SerializeField] private InputAction jumpAction;
     [SerializeField] Player checkRunning;
@@ -17,6 +16,8 @@ public class PlayerJump : MonoBehaviour
     [SerializeField] private Vector2 wallCheckSize;
     [SerializeField] bool isGrounded;
     private bool wallDetected;
+    private CapsuleCollider2D col;
+
 
     public LayerMask whatIsGround;
 
@@ -27,18 +28,16 @@ public class PlayerJump : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         checkRunning = GetComponent<Player>();
         anim = GetComponent<Animator>();
+        col = GetComponent<CapsuleCollider2D>();
     }
-    
+
     void Update()
     {
         CheckCollision();
         checkInput();
-        if (isGrounded)
-        {
-            canDoubleJump = true;
-        }
 
-        
+
+
         AnimationController();
     }
 
@@ -61,46 +60,47 @@ public class PlayerJump : MonoBehaviour
 
     private void CheckCollision()
     {
-        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
+        float distance = col.size.y / 2f + 0.05f;
+        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, distance, whatIsGround);
         wallDetected = Physics2D.BoxCast(wallCheck.position, wallCheckSize, 0, Vector2.zero, 0, whatIsGround);
     }
 
     private void checkInput()
     {
-    
-        if (jumpAction.WasPressedThisFrame() && checkRunning.IsRunBegun && !wallDetected&& !checkRunning.IsSliding)
+
+        if (jumpAction.WasPressedThisFrame() && checkRunning.IsRunBegun && !wallDetected && !checkRunning.IsSliding)
         {
 
             Jump();
-            
+
         }
     }
 
-    
+
 
     void Jump()
     {
         if (isGrounded)
         {
-            
+            canDoubleJump = true;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 
-            print("player is jumpping");
+
         }
         else if (canDoubleJump)
         {
             canDoubleJump = false;
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 
-            print("player is jumpping two time");
+
         }
-        
+
     }
     // vẽ tia raycast
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawRay(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
+        Gizmos.DrawRay(transform.position, Vector2.down * groundCheckDistance);
         Gizmos.DrawWireCube(wallCheck.position, wallCheckSize);
     }
 }
