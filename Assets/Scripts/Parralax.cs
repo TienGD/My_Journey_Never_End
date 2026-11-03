@@ -11,7 +11,7 @@ public class Parralax : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        cam = GameObject.Find("Main Camera");
+        cam = Camera.main.gameObject;
         length = GetComponent<SpriteRenderer>().bounds.size.x;
         xPositon = transform.position.x;
     }

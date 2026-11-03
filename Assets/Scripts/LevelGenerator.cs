@@ -21,13 +21,11 @@ public class LevelGenerator : MonoBehaviour
 
     private void GeneratePlatform()
     {
-        while (Vector2.Distance(player.transform.position,nextPartPosititon)<distanceToSpawn)
+        if (Vector2.Distance(player.transform.position, nextPartPosititon) < distanceToSpawn)
         {
             Transform part = levelPart[Random.Range(0, levelPart.Length)];
-
-            Vector2 newPositon = new Vector2(nextPartPosititon.x - part.Find("StartPoint").position.x, 0);
-
-            Transform newPart = Instantiate(part, newPositon, transform.rotation, transform);
+            Vector2 newPosition = new Vector2(nextPartPosititon.x - part.Find("StartPoint").position.x, 0);
+            Transform newPart = Instantiate(part, newPosition, transform.rotation, transform);
             nextPartPosititon = newPart.Find("EndPoint").position;
         }
     }

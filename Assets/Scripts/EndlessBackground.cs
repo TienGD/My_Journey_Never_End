@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class EndlessBackground : MonoBehaviour
@@ -17,36 +18,21 @@ public class EndlessBackground : MonoBehaviour
         lastCamPos = cam.position;
 
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr == null)
-        {
-            Debug.LogError("EndlessBackground requires a SpriteRenderer component.");
-            return;
-        }
-        
-        width = sr.bounds.size.x;
+        if (sr == null) { Debug.LogError("EndlessBackground requires a SpriteRenderer."); return; }
 
-        // Initialize array to hold 3 backgrounds for seamless scrolling
+        width = sr.bounds.size.x;
         backgrounds = new GameObject[3];
         backgrounds[0] = gameObject;
-        
-        // Create 2 duplicates
-        for (int i = 1; i < 3; i++)
-        {
-            backgrounds[i] = Instantiate(gameObject, transform.parent);
-            
-            // Remove the script from clones to prevent infinite instantiation
-            Destroy(backgrounds[i].GetComponent<EndlessBackground>());
-            
-            // Position them side by side
-            backgrounds[i].transform.position = new Vector3(transform.position.x + width * i, transform.position.y, transform.position.z);
-        }
-        
-        // Adjust the initial positions to be centered around the first one
-        backgrounds[0].transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+
+        // Sinh ra ngay lập tức ở frame đầu tiên
+        backgrounds[1] = Instantiate(gameObject, transform.parent);
+        Destroy(backgrounds[1].GetComponent<EndlessBackground>());
         backgrounds[1].transform.position = new Vector3(transform.position.x + width, transform.position.y, transform.position.z);
+
+        backgrounds[2] = Instantiate(gameObject, transform.parent);
+        Destroy(backgrounds[2].GetComponent<EndlessBackground>());
         backgrounds[2].transform.position = new Vector3(transform.position.x - width, transform.position.y, transform.position.z);
     }
-
     void LateUpdate()
     {
         if (cam == null) return;
