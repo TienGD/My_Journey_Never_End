@@ -29,6 +29,9 @@ public class Player : MonoBehaviour
     [SerializeField] bool isRunning;
     [SerializeField] bool isGrounded;
 
+
+    [HideInInspector]public bool ledgeDetected;
+
     private Animator anim;
     private Rigidbody2D rb;
 
