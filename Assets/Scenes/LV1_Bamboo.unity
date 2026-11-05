@@ -1070,6 +1070,8 @@ MonoBehaviour:
   isRunning: 0
   isGrounded: 0
   ledgeDetected: 0
+  offset1: {x: 0, y: 0}
+  offset2: {x: 0, y: 0}
 --- !u!70 &1437134705
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

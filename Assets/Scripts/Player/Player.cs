@@ -32,6 +32,17 @@ public class Player : MonoBehaviour
 
     [HideInInspector]public bool ledgeDetected;
 
+    [Header("ledge information")]
+    [SerializeField] Vector2 offset1;
+    [SerializeField] Vector2 offset2;
+
+    private Vector2 climbBegunPosition;
+    private Vector2 climbOverPosition;
+
+    private bool canGrapLedge=true;
+    private bool canclimb;
+
+
     private Animator anim;
     private Rigidbody2D rb;
 
@@ -58,8 +69,25 @@ public class Player : MonoBehaviour
         {
             Running();
         }
-
+        CheckForLedge();
         AnimatorController();
+    }
+
+    private void CheckForLedge()
+    {
+        if (ledgeDetected && canGrapLedge)
+        {
+            canGrapLedge = false;
+            Vector2 ledgePosition = GetComponentInChildren<LegdeDetection>().transform.position;
+            climbBegunPosition = ledgePosition + offset1;
+            climbOverPosition = ledgePosition + offset2;
+
+            canclimb = true;
+        }
+        if (canclimb)
+        {
+            transform.position = climbBegunPosition;
+        }
     }
 
     private void Running()
