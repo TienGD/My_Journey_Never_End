@@ -21,7 +21,7 @@ public class EndlessBackground : MonoBehaviour
         if (sr == null) { Debug.LogError("EndlessBackground requires a SpriteRenderer."); return; }
 
         width = sr.bounds.size.x;
-        backgrounds = new GameObject[3];
+        backgrounds = new GameObject[5];
         backgrounds[0] = gameObject;
 
         // Sinh ra ngay lập tức ở frame đầu tiên
@@ -51,12 +51,12 @@ public class EndlessBackground : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             // If camera moves too far right
-            if (cam.position.x > backgrounds[i].transform.position.x + width * 1.5f)
+            while (cam.position.x > backgrounds[i].transform.position.x + width * 1.5f)
             {
                 backgrounds[i].transform.position += new Vector3(width * 3f, 0, 0);
             }
             // If camera moves too far left
-            else if (cam.position.x < backgrounds[i].transform.position.x - width * 1.5f)
+            if (cam.position.x < backgrounds[i].transform.position.x - width * 1.5f)
             {
                 backgrounds[i].transform.position -= new Vector3(width * 3f, 0, 0);
             }
