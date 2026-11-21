@@ -15,18 +15,23 @@ public class PlayerJump : MonoBehaviour
     [SerializeField] private Transform wallCheck;
     [SerializeField] private Vector2 wallCheckSize;
     [SerializeField] bool isGrounded;
+    public bool IsGrounded => isGrounded;
+
     private bool wallDetected;
+    public bool WallDetected { get => wallDetected; set => wallDetected = value; }
     private CapsuleCollider2D col;
 
 
     public LayerMask whatIsGround;
 
     private Animator anim;
+    private PlayerSlide playerSlide;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         checkRunning = GetComponent<Player>();
+        playerSlide = GetComponent<PlayerSlide>();
         anim = GetComponent<Animator>();
         col = GetComponent<CapsuleCollider2D>();
     }
@@ -60,15 +65,16 @@ public class PlayerJump : MonoBehaviour
 
     private void CheckCollision()
     {
-        float distance = col.size.y / 2f + 0.05f;
+        float distance = Mathf.Max(col.size.y / 2f + 0.05f, 0.5f);
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, distance, whatIsGround);
         wallDetected = Physics2D.BoxCast(wallCheck.position, wallCheckSize, 0, Vector2.zero, 0, whatIsGround);
     }
 
     private void checkInput()
     {
-
-        if (jumpAction.WasPressedThisFrame() && checkRunning.IsRunBegun && !wallDetected && !checkRunning.IsSliding)
+        bool isSliding = playerSlide != null && playerSlide.IsSliding;
+        if (wallDetected) { }
+        if (jumpAction.WasPressedThisFrame() && checkRunning.IsRunBegun && !wallDetected && !isSliding)
         {
 
             Jump();

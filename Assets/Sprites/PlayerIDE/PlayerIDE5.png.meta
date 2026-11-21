@@ -116,12 +116,12 @@ TextureImporter:
       name: playerIDE5_0
       rect:
         serializedVersion: 2
-        x: 14
+        x: 15
         y: 10
-        width: 70
+        width: 68
         height: 100
-      alignment: 8
-      pivot: {x: 1, y: 0}
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

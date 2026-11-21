@@ -1,6 +1,6 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
 
 public class Player : MonoBehaviour
 {
@@ -11,166 +11,124 @@ public class Player : MonoBehaviour
     [Header("input information")]
     [SerializeField] InputAction runAction;
 
-    [Tooltip("Kéo thả Action SwipeDelta vào đây")]
-    public InputActionReference swipeAction;
-    [Tooltip("Độ dài vuốt tối thiểu để kích hoạt trượt (lọc nhiễu)")]
-    public float swipeThreshold = 20f;
-
-    [Header("slide information")]
-    [SerializeField] float slideSpeed;
-    [SerializeField] float slideCounter;
-    [SerializeField] bool isSliding = false;
-    private Vector2 originalSize;
-    private Vector2 originalOffset;
-    private CapsuleCollider2D body;
-    [SerializeField] LayerMask whatIsGround;
-
     [Header("check box")]
     [SerializeField] bool isRunning;
     [SerializeField] bool isGrounded;
 
-
-    [HideInInspector]public bool ledgeDetected;
-
-    [Header("ledge information")]
-    [SerializeField] Vector2 offset1;
-    [SerializeField] Vector2 offset2;
-
-    private Vector2 climbBegunPosition;
-    private Vector2 climbOverPosition;
-
-    private bool canGrapLedge=true;
-    private bool canclimb;
-
+    [Header("Speed info")]
+    [SerializeField] private float maxSpeed;
+    [SerializeField] private float speedMultiplier;
+    private float defaultSpeed;
+    private PlayerJump wallDetect;
+    [Space]
+    [SerializeField] private float milestoneIncreaser;
+    private float speedMilestone;
+    private float defaultMilestoneIncreaser;
 
     private Animator anim;
     private Rigidbody2D rb;
-
+    private PlayerSlide playerSlide;
+    private PlayerLedgeClimb playerLedgeClimb;
 
     public bool IsRunBegun { get => isRunBegun; private set => isRunBegun = value; }
-    public bool IsSliding { get => isSliding; set => isSliding = value; }
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        body = GetComponent<CapsuleCollider2D>();
-        originalSize = body.size;
-        originalOffset = body.offset;
+        playerSlide = GetComponent<PlayerSlide>();
+        playerLedgeClimb = GetComponent<PlayerLedgeClimb>();
         DontDestroyOnLoad(gameObject);
+        wallDetect = GetComponent<PlayerJump>();
+        speedMilestone = milestoneIncreaser;
+        defaultSpeed = moveSpeed;
+        defaultMilestoneIncreaser = milestoneIncreaser;
     }
 
     private void Update()
     {
         checkInput();
 
-
-        if (IsRunBegun)
+        // Khi đang trèo tường thì nhường quyền di chuyển cho PlayerLedgeClimb
+        bool isClimbing = playerLedgeClimb != null && playerLedgeClimb.IsClimbing;
+        if (IsRunBegun && !isClimbing)
         {
             Running();
         }
-        CheckForLedge();
+
+        
+
+        SpeedController();
+
         AnimatorController();
     }
 
-    private void CheckForLedge()
+    private void SpeedController()
     {
-        if (ledgeDetected && canGrapLedge)
-        {
-            canGrapLedge = false;
-            Vector2 ledgePosition = GetComponentInChildren<LegdeDetection>().transform.position;
-            climbBegunPosition = ledgePosition + offset1;
-            climbOverPosition = ledgePosition + offset2;
+        if (moveSpeed >= maxSpeed)
+            return;
 
-            canclimb = true;
-        }
-        if (canclimb)
+        if (transform.position.x > speedMilestone)
         {
-            transform.position = climbBegunPosition;
+            speedMilestone = speedMilestone + milestoneIncreaser;
+
+            moveSpeed = moveSpeed * speedMultiplier;
+            milestoneIncreaser = milestoneIncreaser * speedMultiplier;
+
+            if (moveSpeed > maxSpeed)
+                moveSpeed = maxSpeed;
         }
+    }
+
+    private void speedReset()
+    {
+        moveSpeed = defaultSpeed;
+        milestoneIncreaser = defaultMilestoneIncreaser;
+        speedMilestone = transform.position.x + defaultMilestoneIncreaser;
+
     }
 
     private void Running()
     {
-        if (isSliding)
+        if (wallDetect != null)
         {
-            rb.linearVelocity = new Vector2(slideSpeed, rb.linearVelocity.y);
-
+            if (wallDetect.WallDetected)
+            {
+                speedReset();
+            }
         }
-        else
-        {
-            rb.linearVelocity = new Vector2(moveSpeed, rb.linearVelocity.y);
+        float currentSpeed = (playerSlide != null && playerSlide.IsSliding)
+            ? playerSlide.SlideSpeed
+            : moveSpeed;
 
-
-        }
+        rb.linearVelocity = new Vector2(currentSpeed, rb.linearVelocity.y);
     }
 
     private void AnimatorController()
     {
         isRunning = Mathf.Abs(rb.linearVelocity.x) > 0.01f;
         anim.SetBool("isRunning", isRunning);
-
-
+        if (playerSlide != null)
+        {
+            anim.SetBool("isSliding", playerSlide.IsSliding);
+        }
     }
 
     private void OnEnable()
     {
-        runAction.Enable();
-        swipeAction.action.Enable();
-        swipeAction.action.performed += OnSwipe;
+        runAction?.Enable();
     }
-
 
     private void OnDisable()
     {
-        runAction.Disable();
-        swipeAction.action.performed -= OnSwipe;
-        swipeAction.action.Disable();
+        runAction?.Disable();
     }
+
     private void checkInput()
     {
-        if (runAction.WasPressedThisFrame())
+        if (runAction != null && runAction.WasPressedThisFrame())
         {
             IsRunBegun = true;
         }
     }
-
-    private void OnSwipe(InputAction.CallbackContext context)
-    {
-        Vector2 delta = context.ReadValue<Vector2>();
-        bool isJumping = rb.linearVelocity.y > 0.1f;
-        if (delta.y < -swipeThreshold && !isSliding && !isJumping)
-        {
-            StartCoroutine(PerformSlide());
-        }
-    }
-    private IEnumerator PerformSlide()
-    {
-        isSliding = true;
-        body.offset = new Vector2(originalOffset.x, originalOffset.y - (originalSize.y / 4f));
-        body.size = new Vector2(originalSize.x, originalSize.y / 2f);
-
-        // Đợi tối thiểu slideCounter giây trước
-        yield return new WaitForSeconds(slideCounter);
-        // Sau đó kiểm tra từng frame: còn vật thể bên trên không?
-        while (CeilingDetected())
-        {
-            yield return null; // đợi frame tiếp theo
-        }
-        isSliding = false;
-        body.size = originalSize;
-        body.offset = originalOffset;
-
-    }
-    // Kiểm tra vật thể phía trên đầu (vị trí đầu lúc bình thường)
-    private bool CeilingDetected()
-    {
-        // Vị trí đỉnh đầu khi collider bình thường
-        Vector2 ceilingCheckPos = (Vector2)transform.position
-                                + Vector2.up * (originalOffset.y + originalSize.y / 2f);
-
-        return Physics2D.OverlapCircle(ceilingCheckPos, originalSize.x / 2f, whatIsGround);
-    }
-
-
 }
