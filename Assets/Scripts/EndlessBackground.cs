@@ -1,64 +1,76 @@
-using System.Collections;
 using UnityEngine;
 
 public class EndlessBackground : MonoBehaviour
 {
+    private const int TileCount = 3;
+
     [Tooltip("0 = fixed to world, 1 = fixed to camera (no movement). Values between 0 and 1 create a parallax effect.")]
     [SerializeField] private float parallaxSpeed = 0f;
-    
+
     private Transform cam;
     private Vector3 lastCamPos;
-    
     private GameObject[] backgrounds;
     private float width;
 
-    void Start()
+    private void Start()
     {
+        if (Camera.main == null)
+        {
+            Debug.LogError("EndlessBackground requires a Main Camera in the scene.");
+            return;
+        }
+
         cam = Camera.main.transform;
         lastCamPos = cam.position;
 
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr == null) { Debug.LogError("EndlessBackground requires a SpriteRenderer."); return; }
+        if (sr == null)
+        {
+            Debug.LogError("EndlessBackground requires a SpriteRenderer.");
+            return;
+        }
 
         width = sr.bounds.size.x;
-        backgrounds = new GameObject[5];
+        backgrounds = new GameObject[TileCount];
         backgrounds[0] = gameObject;
 
-        // Sinh ra ngay lập tức ở frame đầu tiên
-        backgrounds[1] = Instantiate(gameObject, transform.parent);
-        Destroy(backgrounds[1].GetComponent<EndlessBackground>());
-        backgrounds[1].transform.position = new Vector3(transform.position.x + width, transform.position.y, transform.position.z);
-
-        backgrounds[2] = Instantiate(gameObject, transform.parent);
-        Destroy(backgrounds[2].GetComponent<EndlessBackground>());
-        backgrounds[2].transform.position = new Vector3(transform.position.x - width, transform.position.y, transform.position.z);
+        // Sinh 2 bản sao hai bên ngay ở frame đầu tiên
+        backgrounds[1] = CreateClone(transform.position.x + width);
+        backgrounds[2] = CreateClone(transform.position.x - width);
     }
-    void LateUpdate()
-    {
-        if (cam == null) return;
 
-        // Calculate how much the camera has moved
+    private GameObject CreateClone(float posX)
+    {
+        GameObject clone = Instantiate(gameObject, transform.parent);
+        Destroy(clone.GetComponent<EndlessBackground>());
+        clone.transform.position = new Vector3(posX, transform.position.y, transform.position.z);
+        return clone;
+    }
+
+    private void LateUpdate()
+    {
+        if (cam == null || backgrounds == null) return;
+
         Vector3 deltaMovement = cam.position - lastCamPos;
         lastCamPos = cam.position;
 
-        // Move all backgrounds by the parallax amount
-        for (int i = 0; i < 3; i++)
-        {
-            backgrounds[i].transform.position += new Vector3(deltaMovement.x * parallaxSpeed, 0, 0);
-        }
+        float parallaxOffsetX = deltaMovement.x * parallaxSpeed;
+        float wrapSpan = width * TileCount;
+        float halfSpan = wrapSpan * 0.5f;
 
-        // Wrap backgrounds when they go out of camera view
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < TileCount; i++)
         {
-            // If camera moves too far right
-            while (cam.position.x > backgrounds[i].transform.position.x + width * 1.5f)
+            Transform bgTransform = backgrounds[i].transform;
+            bgTransform.position += new Vector3(parallaxOffsetX, 0f, 0f);
+
+            while (cam.position.x > bgTransform.position.x + halfSpan)
             {
-                backgrounds[i].transform.position += new Vector3(width * 3f, 0, 0);
+                bgTransform.position += new Vector3(wrapSpan, 0f, 0f);
             }
-            // If camera moves too far left
-            if (cam.position.x < backgrounds[i].transform.position.x - width * 1.5f)
+
+            while (cam.position.x < bgTransform.position.x - halfSpan)
             {
-                backgrounds[i].transform.position -= new Vector3(width * 3f, 0, 0);
+                bgTransform.position -= new Vector3(wrapSpan, 0f, 0f);
             }
         }
     }

@@ -5,10 +5,13 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CapsuleCollider2D))]
 public class PlayerSlide : MonoBehaviour
 {
+    #region Fields & Properties
+    private static readonly int IsSlidingHash = Animator.StringToHash("isSliding");
+
     [Header("Slide Information")]
     [SerializeField] private float slideSpeed = 20f;
     [SerializeField] private float slideCounter = 0.3f;
-    [SerializeField] private bool isSliding = false;
+    [SerializeField] private bool isSliding;
     [SerializeField] private LayerMask whatIsGround;
 
     [Header("Input Information")]
@@ -21,7 +24,9 @@ public class PlayerSlide : MonoBehaviour
     private CapsuleCollider2D body;
     private Rigidbody2D rb;
     private Animator anim;
+    private Player player;
     private PlayerJump playerJump;
+    private PlayerLedgeClimb playerLedgeClimb;
 
     // Các thông số hình học được tính sẵn 1 lần (Cache)
     private Vector2 originalSize;
@@ -41,15 +46,18 @@ public class PlayerSlide : MonoBehaviour
 
     public bool IsSliding => isSliding;
     public float SlideSpeed => slideSpeed;
+    #endregion
 
+    #region Unity Lifecycle
     private void Awake()
     {
         body = GetComponent<CapsuleCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        player = GetComponent<Player>();
         playerJump = GetComponent<PlayerJump>();
+        playerLedgeClimb = GetComponent<PlayerLedgeClimb>();
 
-        // Tự động đồng bộ LayerMask mặt đất từ PlayerJump nếu chưa gán trong Inspector
         if (whatIsGround.value == 0 && playerJump != null)
         {
             whatIsGround = playerJump.whatIsGround;
@@ -60,27 +68,12 @@ public class PlayerSlide : MonoBehaviour
         cachedSlideCounter = slideCounter;
         slideWait = new WaitForSeconds(slideCounter);
 
-        // Khởi tạo phím trượt mặc định (Mũi tên xuống & S) nếu chưa gắn trong Inspector
         if (slideAction == null || slideAction.bindings.Count == 0)
         {
             slideAction = new InputAction("Slide", InputActionType.Button);
             slideAction.AddBinding("<Keyboard>/downArrow");
             slideAction.AddBinding("<Keyboard>/s");
         }
-    }
-
-    private void CacheColliderGeometry()
-    {
-        originalSize = body.size;
-        originalOffset = body.offset;
-
-        // Thu nhỏ chiều cao đi 1/2, giữ nguyên đáy Collider ở chân
-        slideSize = new Vector2(originalSize.x, originalSize.y * 0.5f);
-        slideOffset = new Vector2(originalOffset.x, originalOffset.y - (originalSize.y * 0.25f));
-
-        // Hộp kiểm tra trần nhà bao phủ toàn bộ nửa thân trên khi đứng dậy
-        ceilingBoxOffset = new Vector2(originalOffset.x, originalOffset.y + (originalSize.y * 0.25f));
-        ceilingBoxSize = new Vector2(originalSize.x * 0.9f, originalSize.y * 0.5f);
     }
 
     private void OnEnable()
@@ -107,13 +100,12 @@ public class PlayerSlide : MonoBehaviour
     {
         CheckSlideInput();
     }
+    #endregion
 
+    #region Input Handling
     private void CheckSlideInput()
     {
-        bool isSlideKeyPressed = (slideAction != null && slideAction.WasPressedThisFrame())
-            || (Keyboard.current != null && (Keyboard.current.downArrowKey.wasPressedThisFrame || Keyboard.current.sKey.wasPressedThisFrame));
-
-        if (isSlideKeyPressed)
+        if (slideAction != null && slideAction.WasPressedThisFrame())
         {
             TriggerSlide();
             return;
@@ -122,7 +114,6 @@ public class PlayerSlide : MonoBehaviour
         CheckSwipeInput();
     }
 
-    // Gộp chung xử lý vuốt Chuột (PC) và Cảm ứng (Mobile) qua Pointer.current
     private void CheckSwipeInput()
     {
         Pointer pointer = Pointer.current;
@@ -156,14 +147,34 @@ public class PlayerSlide : MonoBehaviour
             TriggerSlide();
         }
     }
+    #endregion
+
+    #region Slide Mechanics & Geometry
+    private void CacheColliderGeometry()
+    {
+        originalSize = body.size;
+        originalOffset = body.offset;
+
+        // Thu nhỏ chiều cao đi 1/2, giữ nguyên đáy Collider ở chân
+        slideSize = new Vector2(originalSize.x, originalSize.y * 0.5f);
+        slideOffset = new Vector2(originalOffset.x, originalOffset.y - (originalSize.y * 0.25f));
+
+        // Hộp kiểm tra trần nhà bao phủ toàn bộ nửa thân trên khi đứng dậy
+        ceilingBoxOffset = new Vector2(originalOffset.x, originalOffset.y + (originalSize.y * 0.25f));
+        ceilingBoxSize = new Vector2(originalSize.x * 0.9f, originalSize.y * 0.5f);
+    }
 
     public void TriggerSlide()
     {
+        if (isSliding) return;
+        if (player != null && (!player.IsRunBegun || player.WallDetected)) return;
+        if (playerLedgeClimb != null && playerLedgeClimb.IsClimbing) return;
+
         bool inAir = playerJump != null
             ? !playerJump.IsGrounded
             : (rb != null && Mathf.Abs(rb.linearVelocity.y) > 0.1f);
 
-        if (!isSliding && !inAir)
+        if (!inAir)
         {
             slideCoroutine = StartCoroutine(PerformSlide());
         }
@@ -192,7 +203,7 @@ public class PlayerSlide : MonoBehaviour
 
         if (anim != null)
         {
-            anim.SetBool("isSliding", true);
+            anim.SetBool(IsSlidingHash, true);
         }
 
         if (!Mathf.Approximately(cachedSlideCounter, slideCounter))
@@ -201,10 +212,8 @@ public class PlayerSlide : MonoBehaviour
             slideWait = new WaitForSeconds(slideCounter);
         }
 
-        // Đợi tối thiểu slideCounter giây trước
         yield return slideWait;
 
-        // Kiểm tra từng frame xem phía trên còn vật cản không trước khi đứng dậy
         while (CeilingDetected())
         {
             yield return null;
@@ -222,7 +231,7 @@ public class PlayerSlide : MonoBehaviour
 
         if (anim != null)
         {
-            anim.SetBool("isSliding", false);
+            anim.SetBool(IsSlidingHash, false);
         }
     }
 
@@ -231,7 +240,9 @@ public class PlayerSlide : MonoBehaviour
         Vector2 checkCenter = (Vector2)transform.position + ceilingBoxOffset;
         return Physics2D.OverlapBox(checkCenter, ceilingBoxSize, 0f, whatIsGround);
     }
+    #endregion
 
+    #region Gizmos
     private void OnDrawGizmosSelected()
     {
         CapsuleCollider2D col = body != null ? body : GetComponent<CapsuleCollider2D>();
@@ -246,4 +257,5 @@ public class PlayerSlide : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(boxCenter, boxSize);
     }
+    #endregion
 }
