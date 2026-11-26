@@ -2,12 +2,14 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Script Leo Mép Tường (Ledge Climb) độc lập, có thể tái sử dụng cho mọi nhân vật 2D.
-/// Cho phép nhân vật tự động trèo lên tường khi nhảy hơi thụt so với mép tường một khoảng cho phép.
+/// Script Leo Mép Tường (Ledge Climb) cho phép nhân vật tự động trèo lên tường
+/// khi nhảy hơi thụt so với mép tường một khoảng cho phép.
+/// Được điều phối gọi trực tiếp từ Player.Update() trước bước kiểm tra va chạm tường.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
 public class PlayerLedgeClimb : MonoBehaviour
 {
+    #region Fields & Properties
     [Header("Ledge Detection Window (Khoảng nhảy thụt cho phép)")]
     [Tooltip("Độ cao Tia Trên (ngang đỉnh đầu) tính từ chân. Phía trên tia này phải thoáng mới trèo được.")]
     [SerializeField] private float upperRayHeight = 3.1f;
@@ -38,9 +40,12 @@ public class PlayerLedgeClimb : MonoBehaviour
 
     private bool isClimbing;
     private float nextClimbAllowedTime;
+    private float defaultGravityScale;
 
     public bool IsClimbing => isClimbing;
+    #endregion
 
+    #region Unity Lifecycle
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -48,47 +53,50 @@ public class PlayerLedgeClimb : MonoBehaviour
         playerJump = GetComponent<PlayerJump>();
         playerSlide = GetComponent<PlayerSlide>();
 
-        // Tự động đồng bộ LayerMask từ PlayerJump nếu chưa gán trong Inspector
+        defaultGravityScale = rb.gravityScale;
+
         if (whatIsGround.value == 0 && playerJump != null)
         {
             whatIsGround = playerJump.whatIsGround;
         }
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        CheckAndTriggerLedgeClimb();
+        if (isClimbing)
+        {
+            isClimbing = false;
+            if (col != null) col.enabled = true;
+            if (rb != null) rb.gravityScale = defaultGravityScale;
+        }
     }
+    #endregion
 
-    private void CheckAndTriggerLedgeClimb()
+    #region Ledge Detection & Climb
+    public void CheckAndTriggerLedgeClimb()
     {
-        // --- KỸ THUẬT TỐI ƯU 1: Cắt sớm (Early-Exit) ---
-        // Không xử lý nếu đang trèo, đang trong thời gian hồi, hoặc đang trượt
+        // 1. Cắt sớm (Early-Exit) nếu đang trèo, đang hồi cooldown, hoặc đang trượt
         if (isClimbing || Time.time < nextClimbAllowedTime) return;
         if (playerSlide != null && playerSlide.IsSliding) return;
 
-        // Kiểm tra sát dưới đế giày (0.15f): Nếu đang chạy trên mặt đất thì thoát ngay (tốn 0 tia dò tường)
+        // Nếu chân đang chạm mặt đất thì thoát ngay
         Vector2 feetOrigin = (Vector2)transform.position + new Vector2(col.offset.x, 0.05f);
-        bool feetTouchingGround = Physics2D.Raycast(feetOrigin, Vector2.down, 0.15f, whatIsGround);
-        if (feetTouchingGround) return;
+        if (Physics2D.Raycast(feetOrigin, Vector2.down, 0.15f, whatIsGround)) return;
 
-        // --- KỸ THUẬT TỐI ƯU 2: Lazy Raycasting (Chỉ bắn tia tiếp theo khi tia trước thỏa mãn) ---
+        // 2. Lazy Raycasting: Chỉ bắn tia tiếp theo khi tia trước thỏa mãn
         float centerX = transform.position.x + col.offset.x;
         float halfWidth = col.size.x * 0.5f;
         float horizontalRayLength = halfWidth + detectDistance;
         float playerY = transform.position.y;
 
-        // TIA 1 (Tia Ngang Trên - Ngang đỉnh đầu): Kiểm tra phía trên mép tường có thoáng không
+        // TIA 1 (Tia Ngang Trên): Kiểm tra phía trên mép tường có thoáng không
         Vector2 upperOrigin = new Vector2(centerX, playerY + upperRayHeight);
-        RaycastHit2D headHit = Physics2D.Raycast(upperOrigin, Vector2.right, horizontalRayLength, whatIsGround);
-        if (headHit.collider != null)
+        if (Physics2D.Raycast(upperOrigin, Vector2.right, horizontalRayLength, whatIsGround).collider != null)
         {
-            // Tường vẫn còn cao hơn đầu nhân vật -> không phải mép tường
             return;
         }
 
-        // TIA 2 (Tia Dọc Từ Trên Xuống): Quét trong "Khoảng nhảy thụt cho phép" [lowerRayHeight -> upperRayHeight]
-        // Giúp bắt trúng 100% cả tường dày lẫn các bậc thềm mỏng lơ lửng trên không
+        // TIA 2 (Tia Dọc Từ Trên Xuống): Quét trong cửa sổ [lowerRayHeight -> upperRayHeight]
         float windowHeight = upperRayHeight - lowerRayHeight;
         if (windowHeight <= 0f) return;
 
@@ -101,17 +109,15 @@ public class PlayerLedgeClimb : MonoBehaviour
             topHit = Physics2D.Raycast(new Vector2(farProbeX, playerY + upperRayHeight), Vector2.down, windowHeight, whatIsGround);
         }
 
-        // Phải chạm đúng mặt sàn nằm ngang phía trên của tường (normal hướng lên trên)
         if (topHit.collider == null || topHit.normal.y < 0.7f) return;
 
         float ledgeTopY = topHit.point.y;
 
-        // TIA 3 (Tia Ngang Dưới): Bắn ngang ngay dưới mặt đỉnh tường một chút (0.05f) để lấy chính xác tọa độ mép dọc X_wall
+        // TIA 3 (Tia Ngang Dưới): Xác định tọa độ mép dọc X của tường
         Vector2 wallRayOrigin = new Vector2(centerX, ledgeTopY - 0.05f);
         RaycastHit2D wallHit = Physics2D.Raycast(wallRayOrigin, Vector2.right, horizontalRayLength, whatIsGround);
         float wallX = wallHit.collider != null ? wallHit.point.x : (centerX + halfWidth);
 
-        // Tính vị trí đứng đích trên đỉnh tường
         Vector2 targetStandPos = new Vector2(wallX + standForwardOffset, ledgeTopY + 0.02f);
 
         // Kiểm tra khoảng trống trên đỉnh tường có đủ chỗ cho nhân vật đứng không
@@ -122,7 +128,6 @@ public class PlayerLedgeClimb : MonoBehaviour
             return;
         }
 
-        // Kích hoạt quá trình trèo lên đỉnh tường
         StartCoroutine(ClimbLedgeRoutine(targetStandPos));
     }
 
@@ -130,15 +135,12 @@ public class PlayerLedgeClimb : MonoBehaviour
     {
         isClimbing = true;
 
-        float originalGravity = rb.gravityScale;
+        defaultGravityScale = rb.gravityScale;
         rb.gravityScale = 0f;
         rb.linearVelocity = Vector2.zero;
-
-        // Tạm tắt Collider trong khoảnh khắc nhấc chân qua góc tường để không bị vấp cạnh vuông
         col.enabled = false;
 
         Vector2 startPos = transform.position;
-        // Đi theo quỹ đạo chữ L: Kéo người thẳng lên ngang mặt tường trước -> Bước chân vào mặt tường
         Vector2 pullUpPos = new Vector2(startPos.x, targetStandPos.y);
 
         float pullUpDuration = climbDuration * 0.6f;
@@ -149,8 +151,7 @@ public class PlayerLedgeClimb : MonoBehaviour
         while (elapsed < pullUpDuration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / pullUpDuration);
-            transform.position = Vector2.Lerp(startPos, pullUpPos, t);
+            transform.position = Vector2.Lerp(startPos, pullUpPos, Mathf.Clamp01(elapsed / pullUpDuration));
             yield return null;
         }
 
@@ -159,19 +160,20 @@ public class PlayerLedgeClimb : MonoBehaviour
         while (elapsed < stepForwardDuration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / stepForwardDuration);
-            transform.position = Vector2.Lerp(pullUpPos, targetStandPos, t);
+            transform.position = Vector2.Lerp(pullUpPos, targetStandPos, Mathf.Clamp01(elapsed / stepForwardDuration));
             yield return null;
         }
 
         transform.position = targetStandPos;
         col.enabled = true;
-        rb.gravityScale = originalGravity;
+        rb.gravityScale = defaultGravityScale;
 
         isClimbing = false;
         nextClimbAllowedTime = Time.time + climbCooldown;
     }
+    #endregion
 
+    #region Gizmos
     private void OnDrawGizmosSelected()
     {
         CapsuleCollider2D capsule = col != null ? col : GetComponent<CapsuleCollider2D>();
@@ -184,17 +186,15 @@ public class PlayerLedgeClimb : MonoBehaviour
 
         // 1. Tia Trên (Xanh lá - Phải thoáng)
         Vector3 upperStart = new Vector3(centerX, playerY + upperRayHeight, 0f);
-        Vector3 upperEnd = upperStart + Vector3.right * horizontalRayLength;
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(upperStart, upperEnd);
+        Gizmos.DrawLine(upperStart, upperStart + (Vector3.right * horizontalRayLength));
 
         // 2. Tia Dưới (Xanh dương - Giới hạn dưới của khoảng nhảy thụt)
         Vector3 lowerStart = new Vector3(centerX, playerY + lowerRayHeight, 0f);
-        Vector3 lowerEnd = lowerStart + Vector3.right * horizontalRayLength;
         Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(lowerStart, lowerEnd);
+        Gizmos.DrawLine(lowerStart, lowerStart + (Vector3.right * horizontalRayLength));
 
-        // 3. Tia Dọc Quét Mép Tường (Màu vàng cam - Vùng nhảy thụt cho phép)
+        // 3. Tia Dọc Quét Mép Tường (Màu vàng cam)
         float farProbeX = centerX + halfWidth + (detectDistance * 0.75f);
         Gizmos.color = new Color(1f, 0.5f, 0f);
         Gizmos.DrawLine(
@@ -202,4 +202,5 @@ public class PlayerLedgeClimb : MonoBehaviour
             new Vector3(farProbeX, playerY + lowerRayHeight, 0f)
         );
     }
+    #endregion
 }

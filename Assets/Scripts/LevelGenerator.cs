@@ -1,43 +1,56 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class LevelGenerator : MonoBehaviour
 {
     [SerializeField] private Transform[] levelPart;
-    [SerializeField] private Vector3 nextPartPosititon;
 
-    [SerializeField] float distanceToSpawn;
-    [SerializeField] float distanceToDelete;
-    [SerializeField] Transform player;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [FormerlySerializedAs("nextPartPosititon")]
+    [SerializeField] private Vector3 nextPartPosition;
 
+    [SerializeField] private float distanceToSpawn;
+    [SerializeField] private float distanceToDelete;
+    [SerializeField] private Transform player;
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
+        if (player == null) return;
+
         DeletePlatform();
         GeneratePlatform();
     }
 
     private void GeneratePlatform()
     {
-        if (Vector2.Distance(player.transform.position, nextPartPosititon) < distanceToSpawn)
+        if (levelPart == null || levelPart.Length == 0) return;
+
+        if (Vector2.Distance(player.position, nextPartPosition) < distanceToSpawn)
         {
             Transform part = levelPart[Random.Range(0, levelPart.Length)];
-            Vector2 newPosition = new Vector2(nextPartPosititon.x - part.Find("StartPoint").position.x, 0);
+            if (part == null) return;
+
+            Transform startPoint = part.Find("StartPoint");
+            float startOffsetX = startPoint != null ? startPoint.position.x : 0f;
+
+            Vector2 newPosition = new Vector2(nextPartPosition.x - startOffsetX, 0f);
             Transform newPart = Instantiate(part, newPosition, transform.rotation, transform);
-            nextPartPosititon = newPart.Find("EndPoint").position;
+
+            Transform endPoint = newPart.Find("EndPoint");
+            if (endPoint != null)
+            {
+                nextPartPosition = endPoint.position;
+            }
         }
     }
+
     private void DeletePlatform()
     {
-        if (transform.childCount > 0)
+        if (transform.childCount == 0) return;
+
+        Transform partToDelete = transform.GetChild(0);
+        if (Vector2.Distance(player.position, partToDelete.position) > distanceToDelete)
         {
-            Transform partToDelete = transform.GetChild(0);
-            if (Vector2.Distance(player.transform.position, partToDelete.transform.position) > distanceToDelete)
-            {
-                Destroy(partToDelete.gameObject);
-            }
+            Destroy(partToDelete.gameObject);
         }
     }
 }
