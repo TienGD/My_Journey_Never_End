@@ -42,6 +42,7 @@ public class Player : MonoBehaviour
     private PlayerJump playerJump;
     private PlayerSlide playerSlide;
     private PlayerLedgeClimb playerLedgeClimb;
+    private PlayerHealth playerHealth;
 
     public bool WallDetected { get => wallDetected; set => wallDetected = value; }
     public bool IsRunBegun { get => isRunBegun; private set => isRunBegun = value; }
@@ -57,6 +58,7 @@ public class Player : MonoBehaviour
         playerJump = GetComponent<PlayerJump>();
         playerSlide = GetComponent<PlayerSlide>();
         playerLedgeClimb = GetComponent<PlayerLedgeClimb>();
+        playerHealth = GetComponent<PlayerHealth>();
 
         DontDestroyOnLoad(gameObject);
 
@@ -184,13 +186,22 @@ public class Player : MonoBehaviour
         boxCenter = new Vector2(frontEdgeX + (wallCheckWidth * 0.5f), centerY);
     }
 
-    private void KnockBack()
+    public void KnockBack(int damage = 1)
     {
-        if (!canBeKnock)
+        // Nếu đang bất tử (nhấp nháy) hoặc đã chết thì bỏ qua, không trừ máu
+        if (!canBeKnock || isDead)
         {
             return;
         }
-
+        ResetSpeed();
+        if (playerHealth != null)
+        {
+            playerHealth.TakeDamage(damage);
+            if (playerHealth.IsDead)
+            {
+                StartCoroutine(DieRoutine());
+            }
+        }
         isKnock = true;
         rb.linearVelocity = knockbackDirection;
         StartCoroutine(KnockbackAndInvincibilityRoutine());
@@ -230,6 +241,7 @@ public class Player : MonoBehaviour
         Debug.Log("Player is dead");
         rb.linearVelocity = Vector2.zero;
         IsRunBegun = false;
+        isRunning = false;
     }
     #endregion
 
