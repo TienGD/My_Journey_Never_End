@@ -240,6 +240,10 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(1f);
         Debug.Log("Player is dead");
         rb.linearVelocity = Vector2.zero;
+
+        yield return new WaitForSeconds(1f);
+
+        GameManager.instance.RestartLevel();
         IsRunBegun = false;
         isRunning = false;
     }
